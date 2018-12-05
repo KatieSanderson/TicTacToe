@@ -1,17 +1,13 @@
 import java.util.Scanner;
 
 public class TicTacToe {
-	private static final char PLAYER2 = 'O';
+	
 	private static final char PLAYER1 = 'X';
+	private static final char PLAYER2 = 'O';
+	
 	public static void main(String[] args) {
-		char[][] tempBoard = {{'O',' ' , 'O'}, {' ', 'O',' '},{' ', ' ', 'O'}};
-		test(true, checkWon(tempBoard, 'O'));
 		TicTacToe ticTacToe = new TicTacToe();
 		ticTacToe.play();
-	}
-	
-	public static void test(boolean expected, boolean actual) {
-		System.out.println("expected: " + expected + " actual: " + actual);
 	}
 	
 	public void play() {
@@ -49,7 +45,7 @@ public class TicTacToe {
 		}
 	}
 
-	public static char[][] makeBlankBoard(int rows, int columns) {
+	public char[][] makeBlankBoard(int rows, int columns) {
 		char[][] board = new char[rows][columns];
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
@@ -59,7 +55,7 @@ public class TicTacToe {
 		return board;
 	}
 	
-	public static boolean checkWon(char[][] board, char player) {
+	public boolean checkWon(char[][] board, char player) {
 		int columnCount = 0;
 		int rowCount = 0;
 		int backslashDiagonalCount = 0;
@@ -84,7 +80,7 @@ public class TicTacToe {
 		return false;
 	}
 	
-	public static void printBoard(char[][] board) {
+	public void printBoard(char[][] board) {
 		System.out.println("Current board: ");
 		System.out.println();
 		//System.out.println("_______");
@@ -97,14 +93,14 @@ public class TicTacToe {
 		}
 	}
 
-	public static int[] getCoordinates(char player) {
+	public int[] getCoordinates(char player) {
 		int[] coords = new int[2];
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Player " + player + " enter row: ");
 		coords[0] = reader.nextInt();
 		System.out.println("Player " + player + " enter column: ");
 		coords[1] = reader.nextInt();
-		//reader.close();			
+		//reader.close();
 		return coords;
 	}
 }
