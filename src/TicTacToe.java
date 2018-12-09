@@ -16,7 +16,7 @@ public class TicTacToe {
 		int columns = 3;
 		char[][] board = makeBlankBoard(rows, columns);
 		while (true) {
-			int[] xCoords = getCoordinates(PLAYER1);
+			int[] xCoords = getCoordinates(PLAYER1, board, rows, columns);
 			board[xCoords[0]][xCoords[1]] = PLAYER1;
 			rounds++;
 			if (checkWon(board, PLAYER1)) {
@@ -29,9 +29,9 @@ public class TicTacToe {
 				return;
 			}
 			printBoard(board);
-			int[] oCoords = getCoordinates(PLAYER2);
-			rounds++;
+			int[] oCoords = getCoordinates(PLAYER2, board, rows, columns);
 			board[oCoords[0]][oCoords[1]] = PLAYER2;
+			rounds++;
 			if (checkWon(board, PLAYER2)) {
 				System.out.println("Player " + PLAYER2 + " won the game!");
 				printBoard(board);
@@ -72,7 +72,7 @@ public class TicTacToe {
 				return true;
 			}
 			backslashDiagonalCount += board[i][i] == player ? 1 : 0;
-			forwardslashDiagonalCount += board[winCount - 1 - i][winCount - 1 - i] == player ? 1 : 0;
+			forwardslashDiagonalCount += board[winCount - 1 - i][i] == player ? 1 : 0;
 		}
 		if (backslashDiagonalCount == winCount || forwardslashDiagonalCount == winCount) {
 			return true;
@@ -83,7 +83,6 @@ public class TicTacToe {
 	public void printBoard(char[][] board) {
 		System.out.println("Current board: ");
 		System.out.println();
-		//System.out.println("_______");
 		for (int i = 0; i < board.length; i++) { 
 			System.out.print("|");
 			for (int j = 0; j < board[0].length; j++) {
@@ -92,15 +91,42 @@ public class TicTacToe {
 			System.out.println();
 		}
 	}
+	
+	private int getInt(char player, String input, int rowOrCol) {
+		while (true) {
+			try {
+				Scanner reader = new Scanner(System.in);
+				int coord = reader.nextInt();
+				if ((coord >= rowOrCol) || (coord < 0)) {
+					throw new IndexOutOfBoardException();
+				}
+				return coord;
+		    } catch (java.util.InputMismatchException e) {
+		    	System.out.println("Please enter a valid integer. Player " + player + " enter " + input + ":");
+		    } catch (IndexOutOfBoardException f) {
+		    	System.out.println("Cell is outside play board. Please choose valid cell. Player " + player + " enter " + input + ":");
+		    }
+		}
+	}
+	
+	public int[] getCoordinates(char player, char[][] board, int rows, int columns) {
+		while (true) {
+			int[] coords = new int[2];
+			System.out.println("Player " + player + " enter row: ");
+			coords[0] = getInt(player, "row", rows);
+			System.out.println("Player " + player + " enter column: ");
+			coords[1] = getInt(player, "column", columns);
+			if (isValid(board, coords)) {
+				return coords;
+			}
+		}
+	}
 
-	public int[] getCoordinates(char player) {
-		int[] coords = new int[2];
-		Scanner reader = new Scanner(System.in);
-		System.out.println("Player " + player + " enter row: ");
-		coords[0] = reader.nextInt();
-		System.out.println("Player " + player + " enter column: ");
-		coords[1] = reader.nextInt();
-		//reader.close();
-		return coords;
+	public boolean isValid(char[][] board, int[] coords) {
+		if (board[coords[0]][coords[1]] != '_') {
+			System.out.println("Cell is already used. Please choose another cell");
+			return false;
+		}
+		return true;
 	}
 }
