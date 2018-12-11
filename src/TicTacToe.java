@@ -51,12 +51,12 @@ public class TicTacToe {
 				Scanner reader = new Scanner(System.in);
 				int rowCol = reader.nextInt();
 				if (rowCol < 0 || rowCol > 50) {
-					throw new InputOutsideMaxParameterException();
+					throw new IllegalArgumentException();
 				}
 				return rowCol;
 			} catch (java.util.InputMismatchException e) {
 				System.out.println("Please enter an integer. Re-enter: ");
-			} catch (InputOutsideMaxParameterException f) {
+			} catch (IllegalArgumentException f) {
 				System.out.println("Please enter an integer between 0 and 50. Re-enter: ");
 			}
 		}
