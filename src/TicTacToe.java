@@ -1,5 +1,10 @@
 import java.util.Scanner;
 
+/* TODO :
+ * track and print wins 
+ * add extremes: option to explode 1 time per game, if there's a box around a value, it explodes, etc.
+ */
+
 public class TicTacToe {
 	
 	private static final char PLAYER1 = 'X';
@@ -7,32 +12,54 @@ public class TicTacToe {
 	
 	public static void main(String[] args) {
 		TicTacToe ticTacToe = new TicTacToe();
-		ticTacToe.play();
+		while (true) {
+			ticTacToe.play();
+			if (!playAgain()) {
+				return;
+			}
+		}
 	}
 	
+	private static boolean playAgain() {
+		System.out.println("Would you like to play again? Type Y or N: ");
+		while (true) {
+			try {
+				Scanner scanner = new Scanner(System.in);
+				String line = scanner.nextLine();
+				if (line.equals("N") || line.equals("No")) {
+					System.out.println("Tic Tac Toe is finished. Hope you had fun playing!");
+					return false;
+				} else if (line.equals("Y") || line.equals("Yes")) {
+					System.out.println("Next round.");
+					return true;
+				} else {
+					throw new IllegalArgumentException();
+				}
+			} catch (IllegalArgumentException e) {
+				System.out.println("Expected a Y if want to play again or N for finished. Re-enter: ");
+			}
+
+		}
+	}
+
 	public void play() {
 		int rounds = 0;
 		int rows = getRowCol("row");
 		int columns = getRowCol("column");
 		char[][] board = makeBlankBoard(rows, columns);
 		while (true) {
-			int[] xCoords = getCoordinates(PLAYER1, board, rows, columns);
-			board[xCoords[0]][xCoords[1]] = PLAYER1;
-			rounds++;
-			printBoard(board);
+			rounds = playerTurn(PLAYER1, rounds, rows, columns, board);
 			if (checkWon(board, PLAYER1)) {
 				System.out.println("Player " + PLAYER1 + " won the game!");
 				return;
 			}
 			if (rounds >= rows * columns) {
+				//printScore(xWins, oWins);
+				//System.out.println("Current score is Player X with " xWins + " wins and Player O with " + oWins");
 				System.out.println("It's a tie, nobody wins!");
 				return;
 			}
-			printBoard(board);
-			int[] oCoords = getCoordinates(PLAYER2, board, rows, columns);
-			board[oCoords[0]][oCoords[1]] = PLAYER2;
-			rounds++;
-			printBoard(board);
+			playerTurn(PLAYER2, rounds, rows, columns, board);
 			if (checkWon(board, PLAYER2)) {
 				System.out.println("Player " + PLAYER2 + " won the game!");
 				return;
@@ -44,20 +71,27 @@ public class TicTacToe {
 		}
 	}
 
+	public int playerTurn(char player, int rounds, int rows, int columns, char[][] board) {
+		int[] xCoords = getCoordinates(player, board, rows, columns);
+		board[xCoords[0]][xCoords[1]] = player;
+		printBoard(board);
+		return rounds++;
+	}
+
 	private int getRowCol(String input) {
 		System.out.println("Enter the desired " + input + " :");
 		while (true) {
 			try {
 				Scanner reader = new Scanner(System.in);
 				int rowCol = reader.nextInt();
-				if (rowCol < 0 || rowCol > 50) {
+				if (rowCol < 2 || rowCol > 50) {
 					throw new IllegalArgumentException();
 				}
 				return rowCol;
 			} catch (java.util.InputMismatchException e) {
 				System.out.println("Please enter an integer. Re-enter: ");
 			} catch (IllegalArgumentException f) {
-				System.out.println("Please enter an integer between 0 and 50. Re-enter: ");
+				System.out.println("Please enter an integer between 1 and 50. Re-enter: ");
 			}
 		}
 	}
