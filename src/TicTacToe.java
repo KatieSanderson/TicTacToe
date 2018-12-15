@@ -9,6 +9,8 @@ public class TicTacToe {
 	
 	private static final char PLAYER1 = 'X';
 	private static final char PLAYER2 = 'O';
+	private static final int lowerLimit = 2;
+	private static final int upperLimit = 50;
 	
 	public static void main(String[] args) {
 		TicTacToe ticTacToe = new TicTacToe();
@@ -23,22 +25,18 @@ public class TicTacToe {
 	private static boolean playAgain() {
 		System.out.println("Would you like to play again? Type Y or N: ");
 		while (true) {
-			try {
-				Scanner scanner = new Scanner(System.in);
-				String line = scanner.nextLine();
-				if (line.equals("N") || line.equals("No")) {
+			try (Scanner scanner = new Scanner(System.in)) { 
+				String line = scanner.nextLine().toLowerCase();
+				if (line.equals("n") || line.equals("no")) {
 					System.out.println("Tic Tac Toe is finished. Hope you had fun playing!");
 					return false;
-				} else if (line.equals("Y") || line.equals("Yes")) {
+				} else if (line.equals("y") || line.equals("yes")) {
 					System.out.println("Next round.");
 					return true;
 				} else {
-					throw new IllegalArgumentException();
+					System.out.println("Expected a Y if want to play again or N for finished. Re-enter: ");
 				}
-			} catch (IllegalArgumentException e) {
-				System.out.println("Expected a Y if want to play again or N for finished. Re-enter: ");
 			}
-
 		}
 	}
 
@@ -84,14 +82,13 @@ public class TicTacToe {
 			try {
 				Scanner reader = new Scanner(System.in);
 				int rowCol = reader.nextInt();
-				if (rowCol < 2 || rowCol > 50) {
-					throw new IllegalArgumentException();
+				if (rowCol < lowerLimit || rowCol > upperLimit) {
+					System.out.println("Please enter an integer between " + lowerLimit + " and " + upperLimit + ". Re-enter " + input + "2: ");
+					continue;
 				}
 				return rowCol;
 			} catch (java.util.InputMismatchException e) {
 				System.out.println("Please enter an integer. Re-enter: ");
-			} catch (IllegalArgumentException f) {
-				System.out.println("Please enter an integer between 1 and 50. Re-enter: ");
 			}
 		}
 	}
@@ -149,13 +146,12 @@ public class TicTacToe {
 				Scanner reader = new Scanner(System.in);
 				int coord = reader.nextInt();
 				if ((coord >= rowOrCol) || (coord < 0)) {
-					throw new IndexOutOfBoardException();
+					System.out.println("Cell is outside play board. Please choose valid cell. Player " + player + " enter " + input + ":");
+					continue;
 				}
 				return coord;
 		    } catch (java.util.InputMismatchException e) {
 		    	System.out.println("Please enter a valid integer. Player " + player + " enter " + input + ":");
-		    } catch (IndexOutOfBoardException f) {
-		    	System.out.println("Cell is outside play board. Please choose valid cell. Player " + player + " enter " + input + ":");
 		    }
 		}
 	}
