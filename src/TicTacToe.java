@@ -1,19 +1,19 @@
 import java.util.Scanner;
 
 /* TODO :
- * track and print wins 
- * add extremes: option to explode 1 time per game, if there's a box around a value, it explodes, etc.
+ * add extremes: option to explode and/or add 1 time per game, if there's a box around a value, it explodes, etc.
  */
 
 public class TicTacToe {
 	
-	private static final char PLAYER1 = 'X';
-	private static final char PLAYER2 = 'O';
 	private static final int lowerLimit = 2;
 	private static final int upperLimit = 50;
+	Player playerX = new Player('X');
+	Player playerO = new Player('O');
 	
 	public static void main(String[] args) {
 		TicTacToe ticTacToe = new TicTacToe();
+		System.out.println("Directions: ");
 		while (true) {
 			ticTacToe.play();
 			if (!playAgain()) {
@@ -46,20 +46,16 @@ public class TicTacToe {
 		int columns = getRowCol("column");
 		char[][] board = makeBlankBoard(rows, columns);
 		while (true) {
-			rounds = playerTurn(PLAYER1, rounds, rows, columns, board);
-			if (checkWon(board, PLAYER1)) {
-				System.out.println("Player " + PLAYER1 + " won the game!");
+			rounds = playerTurn(playerX, rounds, rows, columns, board);
+			if (checkWon(board, playerX)) {
 				return;
 			}
 			if (rounds >= rows * columns) {
-				//printScore(xWins, oWins);
-				//System.out.println("Current score is Player X with " xWins + " wins and Player O with " + oWins");
 				System.out.println("It's a tie, nobody wins!");
 				return;
 			}
-			playerTurn(PLAYER2, rounds, rows, columns, board);
-			if (checkWon(board, PLAYER2)) {
-				System.out.println("Player " + PLAYER2 + " won the game!");
+			playerTurn(playerO, rounds, rows, columns, board);
+			if (checkWon(board, playerO)) {
 				return;
 			}
 			if (rounds >= rows * columns) {
@@ -69,9 +65,9 @@ public class TicTacToe {
 		}
 	}
 
-	public int playerTurn(char player, int rounds, int rows, int columns, char[][] board) {
+	public int playerTurn(Player player, int rounds, int rows, int columns, char[][] board) {
 		int[] xCoords = getCoordinates(player, board, rows, columns);
-		board[xCoords[0]][xCoords[1]] = player;
+		board[xCoords[0]][xCoords[1]] = player.getId();
 		printBoard(board);
 		return rounds++;
 	}
@@ -103,7 +99,7 @@ public class TicTacToe {
 		return board;
 	}
 	
-	public boolean checkWon(char[][] board, char player) {
+	public boolean checkWon(char[][] board, Player player) {
 		int columnCount = 0;
 		int rowCount = 0;
 		int backslashDiagonalCount = 0;
@@ -113,16 +109,21 @@ public class TicTacToe {
 			rowCount = 0;
 			columnCount = 0;
 			for (int j = 0; j < board[0].length; j++) {
-				rowCount += board[i][j] == player ? 1 : 0;
-				columnCount += board[j][i] == player ? 1 : 0;
+				rowCount += board[i][j] == player.getId() ? 1 : 0;
+				columnCount += board[j][i] == player.getId() ? 1 : 0;
 			}
 			if (rowCount == winCount || columnCount == winCount) {
+				System.out.println("Player " + player.getId() + " won the game!");
+				player.setWins(player.getWins() + 1);
+				System.out.println("Current score is Player " + playerX.getId() + " with " + playerX.getWins() + " wins and Player " + playerO.getId() + " with " + playerO.getWins() + " wins");
 				return true;
 			}
-			backslashDiagonalCount += board[i][i] == player ? 1 : 0;
-			forwardslashDiagonalCount += board[winCount - 1 - i][i] == player ? 1 : 0;
+			backslashDiagonalCount += board[i][i] == player.getId() ? 1 : 0;
+			forwardslashDiagonalCount += board[winCount - 1 - i][i] == player.getId() ? 1 : 0;
 		}
 		if (backslashDiagonalCount == winCount || forwardslashDiagonalCount == winCount) {
+			System.out.println("Player " + player.getId() + " won the game!");
+			player.setWins(player.getWins() + 1);
 			return true;
 		}
 		return false;
@@ -140,28 +141,28 @@ public class TicTacToe {
 		}
 	}
 	
-	private int getInt(char player, String input, int rowOrCol) {
+	private int getInt(Player player, String input, int rowOrCol) {
 		while (true) {
 			try {
 				Scanner reader = new Scanner(System.in);
 				int coord = reader.nextInt();
 				if ((coord >= rowOrCol) || (coord < 0)) {
-					System.out.println("Cell is outside play board. Please choose valid cell. Player " + player + " enter " + input + ":");
+					System.out.println("Cell is outside play board. Please choose valid cell. Player " + player.getId() + " enter " + input + ":");
 					continue;
 				}
 				return coord;
 		    } catch (java.util.InputMismatchException e) {
-		    	System.out.println("Please enter a valid integer. Player " + player + " enter " + input + ":");
+		    	System.out.println("Please enter a valid integer. Player " + player.getId() + " enter " + input + ":");
 		    }
 		}
 	}
 	
-	public int[] getCoordinates(char player, char[][] board, int rows, int columns) {
+	public int[] getCoordinates(Player player, char[][] board, int rows, int columns) {
 		while (true) {
 			int[] coords = new int[2];
-			System.out.println("Player " + player + " enter row: ");
+			System.out.println("Player " + player.getId() + " enter row: ");
 			coords[0] = getInt(player, "row", rows);
-			System.out.println("Player " + player + " enter column: ");
+			System.out.println("Player " + player.getId() + " enter column: ");
 			coords[1] = getInt(player, "column", columns);
 			if (isValid(board, coords)) {
 				return coords;
