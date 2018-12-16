@@ -1,49 +1,57 @@
 import java.util.Scanner;
 
 /* TODO :
- * add extremes: option to explode and/or add 1 time per game, if there's a box around a value, it explodes, etc.
+ * Add possibility of non-square board
+ * Add extremes: option to explode and/or add 1 time per game, if there's a box around a value, it explodes, etc.
  */
 
 public class TicTacToe {
-	
+
 	private static final int lowerLimit = 2;
 	private static final int upperLimit = 50;
+
+	private final Scanner scanner;
 	Player playerX = new Player('X');
 	Player playerO = new Player('O');
-	
+
+	public TicTacToe(Scanner scanner) {
+		this.scanner = scanner;
+	}
+
 	public static void main(String[] args) {
-		TicTacToe ticTacToe = new TicTacToe();
-		System.out.println("Directions: ");
-		while (true) {
-			ticTacToe.play();
-			if (!playAgain()) {
-				return;
+		try (Scanner scanner = new Scanner(System.in)) {
+			TicTacToe ticTacToe = new TicTacToe(scanner);
+			System.out.println("Directions: ");
+			while (true) {
+				ticTacToe.play();
+				if (!ticTacToe.playAgain()) {
+					return;
+				}
 			}
 		}
 	}
-	
-	private static boolean playAgain() {
+
+	private boolean playAgain() {
 		System.out.println("Would you like to play again? Type Y or N: ");
 		while (true) {
-			try (Scanner scanner = new Scanner(System.in)) { 
-				String line = scanner.nextLine().toLowerCase();
-				if (line.equals("n") || line.equals("no")) {
-					System.out.println("Tic Tac Toe is finished. Hope you had fun playing!");
-					return false;
-				} else if (line.equals("y") || line.equals("yes")) {
-					System.out.println("Next round.");
-					return true;
-				} else {
-					System.out.println("Expected a Y if want to play again or N for finished. Re-enter: ");
-				}
+			String line = scanner.next().toLowerCase();
+			if (line.equals("n") || line.equals("no")) {
+				System.out.println("Tic Tac Toe is finished. Hope you had fun playing!");
+				return false;
+			} else if (line.equals("y") || line.equals("yes")) {
+				System.out.println("Next round.");
+				return true;
+			} else {
+				System.out.println("Expected a Y if want to play again or N for finished. Re-enter: ");
 			}
 		}
 	}
 
 	public void play() {
 		int rounds = 0;
-		int rows = getRowCol("row");
-		int columns = getRowCol("column");
+		// TODO: Add capability for non-square board
+		int rows = getRowCol("size");
+		int columns = rows;
 		char[][] board = makeBlankBoard(rows, columns);
 		while (true) {
 			rounds = playerTurn(playerX, rounds, rows, columns, board);
@@ -73,13 +81,12 @@ public class TicTacToe {
 	}
 
 	private int getRowCol(String input) {
-		System.out.println("Enter the desired " + input + " :");
+		System.out.println("Enter the desired " + input + ":");
 		while (true) {
 			try {
-				Scanner reader = new Scanner(System.in);
-				int rowCol = reader.nextInt();
+				int rowCol = scanner.nextInt();
 				if (rowCol < lowerLimit || rowCol > upperLimit) {
-					System.out.println("Please enter an integer between " + lowerLimit + " and " + upperLimit + ". Re-enter " + input + "2: ");
+					System.out.println("Please enter an integer between " + lowerLimit + " and " + upperLimit + ". Re-enter " + input + ": ");
 					continue;
 				}
 				return rowCol;
@@ -98,7 +105,7 @@ public class TicTacToe {
 		}
 		return board;
 	}
-	
+
 	public boolean checkWon(char[][] board, Player player) {
 		int columnCount = 0;
 		int rowCount = 0;
@@ -128,11 +135,11 @@ public class TicTacToe {
 		}
 		return false;
 	}
-	
+
 	public void printBoard(char[][] board) {
 		System.out.println("Current board: ");
 		System.out.println();
-		for (int i = 0; i < board.length; i++) { 
+		for (int i = 0; i < board.length; i++) {
 			System.out.print("|");
 			for (int j = 0; j < board[0].length; j++) {
 				System.out.print(board[i][j] + "|");
@@ -140,23 +147,22 @@ public class TicTacToe {
 			System.out.println();
 		}
 	}
-	
+
 	private int getInt(Player player, String input, int rowOrCol) {
 		while (true) {
 			try {
-				Scanner reader = new Scanner(System.in);
-				int coord = reader.nextInt();
+				int coord = scanner.nextInt();
 				if ((coord >= rowOrCol) || (coord < 0)) {
 					System.out.println("Cell is outside play board. Please choose valid cell. Player " + player.getId() + " enter " + input + ":");
 					continue;
 				}
 				return coord;
-		    } catch (java.util.InputMismatchException e) {
-		    	System.out.println("Please enter a valid integer. Player " + player.getId() + " enter " + input + ":");
-		    }
+			} catch (java.util.InputMismatchException e) {
+				System.out.println("Please enter a valid integer. Player " + player.getId() + " enter " + input + ":");
+			}
 		}
 	}
-	
+
 	public int[] getCoordinates(Player player, char[][] board, int rows, int columns) {
 		while (true) {
 			int[] coords = new int[2];
